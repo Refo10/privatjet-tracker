@@ -34,7 +34,11 @@ with right:
 # =======================
 st.sidebar.header("Daten & Filter")
 uploaded = st.sidebar.file_uploader("CSV hochladen", type=["csv"])
-use_demo = st.sidebar.toggle("Demo-Daten verwenden", value=(uploaded is None))
+use_standard_dataset = st.sidebar.toggle(
+    "Standard-Datensatz verwenden",
+    value=True
+)
+
 
 df_all = None
 
@@ -83,7 +87,10 @@ if uploaded is not None and not use_demo:
 else:
     try:
         df_all = load_default_csv()
-        st.sidebar.caption("Standard-Datensatz: Drake (N767CJ)")
+        if use_standard_dataset:
+            st.sidebar.caption("Aktiver Datensatz: Drake (N767CJ)")
+        else:
+            st.sidebar.caption(f"Aktiver Datensatz: {uploaded.name}")
     except Exception as e:
         st.warning("Standard-CSV konnte nicht geladen werden – Demo-Daten aktiv.")
         df_all = load_flights_placeholder()
