@@ -154,3 +154,10 @@ def finalize_df(df: pd.DataFrame) -> pd.DataFrame:
     df = enrich_time_cols(df)
     df = df.dropna(subset=["orig_lat", "orig_lon", "dest_lat", "dest_lon"])
     return df
+
+def load_default_csv() -> pd.DataFrame:
+    df = pd.read_csv("data/drake_flights.csv")
+    df = normalize_column_names(df)
+    df = finalize_df(df)
+    return df
+
