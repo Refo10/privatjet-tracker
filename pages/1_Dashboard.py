@@ -35,7 +35,7 @@ with right:
 st.sidebar.header("Daten & Filter")
 uploaded = st.sidebar.file_uploader("CSV hochladen", type=["csv"])
 use_demo = st.sidebar.toggle(
-    "Hochgeladenes CSV verwenden",
+    "Standart CSV verwenden",
     value=(uploaded is not None)
 )
 
