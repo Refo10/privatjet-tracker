@@ -4,14 +4,20 @@ import pandas as pd
 
 def make_map(df: pd.DataFrame):
     layer = pdk.Layer(
-        "ArcLayer",
-        data=df.sample(min(len(df), 300), random_state=1),
-        get_source_position=["orig_lon", "orig_lat"],
-        get_target_position=["dest_lon", "dest_lat"],
-        get_width=2,
-        pickable=True,
-        auto_highlight=True,
-    )
+    "ArcLayer",
+    data=df.sample(min(len(df), 300), random_state=1),
+    get_source_position=["orig_lon", "orig_lat"],
+    get_target_position=["dest_lon", "dest_lat"],
+
+    # ✅ Farbe: Grün (RGB + Alpha)
+    get_source_color=[0, 200, 0, 160],
+    get_target_color=[0, 200, 0, 160],
+
+    get_width=2,
+    pickable=True,
+    auto_highlight=True,
+)
+
 
     view_state = pdk.ViewState(latitude=50.5, longitude=10.5, zoom=3.4, pitch=30)
 
