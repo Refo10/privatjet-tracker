@@ -37,6 +37,7 @@ def enrich_time_cols(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.dropna(subset=["date"])
+    df["date_str"] = df["date"].dt.strftime("%Y-%m-%d")  # ✅ neu
     df["year"] = df["date"].dt.year
     df["month"] = df["date"].dt.to_period("M").astype(str)
     return df
