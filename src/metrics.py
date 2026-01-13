@@ -7,8 +7,13 @@ def compute_kpis(df: pd.DataFrame):
     avg_duration = float(df["flight_time_min"].mean()) if flights else 0.0
     return flights, avg_distance, total_co2_t, avg_duration
 
-def compare_to_small_city(total_co2_t: float):
-    # Platzhalterwert – später ersetzen wir das mit echter Quelle
-    small_city_t_per_year = 50_000.0
-    share = (total_co2_t / small_city_t_per_year * 100) if small_city_t_per_year else 0.0
-    return small_city_t_per_year, share
+def compare_to_small_city(total_co2_t: float, population: int = 15000, per_capita_t: float = 8.5):
+    """
+    Vergleich: Privatjet-CO₂ (in Tonnen) vs. jährliche CO₂-Emissionen einer Kleinstadt.
+
+    population: Einwohnerzahl (Kleinstadt typischerweise 5.000–20.000)
+    per_capita_t: Pro-Kopf-Emissionen (t CO₂/Jahr), Default grob Deutschland-Niveau
+    """
+    small_city_total_t = population * per_capita_t
+    share_percent = (total_co2_t / small_city_total_t * 100) if small_city_total_t > 0 else 0.0
+    return small_city_total_t, share_percent
