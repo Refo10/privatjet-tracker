@@ -9,6 +9,7 @@ from src.data import (
     apply_mapping,
     validate_flights_df,
     finalize_df,
+    load_default_csv,
 )
 from src.metrics import compute_kpis, compare_to_small_city
 from src.viz import make_map, chart_flights_per_month, chart_co2_by_year
@@ -80,8 +81,13 @@ if uploaded is not None and not use_demo:
         df_all = load_flights_placeholder()
 
 else:
-    df_all = load_flights_placeholder()
-    st.sidebar.caption("Aktuell Demo-Daten aktiv.")
+    try:
+        df_all = load_default_csv()
+        st.sidebar.caption("Standard-Datensatz: Drake (N767CJ)")
+    except Exception as e:
+        st.warning("Standard-CSV konnte nicht geladen werden – Demo-Daten aktiv.")
+        df_all = load_flights_placeholder()
+
 
 # =======================
 # Absicherung
