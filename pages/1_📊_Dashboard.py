@@ -1,6 +1,14 @@
 import streamlit as st
 from src.styles import apply_global_style
-from src.data import load_flights_placeholder
+from src.data import (
+    load_flights_placeholder,
+    read_csv_any,
+    normalize_column_names,
+    auto_map_columns,
+    apply_mapping,
+    validate_flights_df,
+    finalize_df,
+)
 from src.metrics import compute_kpis, compare_to_small_city
 from src.viz import make_map, chart_flights_per_month, chart_co2_by_year
 
@@ -15,64 +23,52 @@ with left:
 with right:
     st.markdown('<div class="pill">Python • Pandas • Streamlit</div>', unsafe_allow_html=True)
 
-st.sidebar.header("Filter & Ansicht")
+# Sidebar
+st.sidebar.header("Daten & Filter")
 
-df_all = load_flights_placeholder()
+uploaded = st.sidebar.file_uploader("CSV hochladen", type=["csv"])
 
-year_min, year_max = int(df_all["year"].min()), int(df_all["year"].max())
-year_mode = st.sidebar.radio("Jahresauswahl", ["Alle Jahre", "Ein Jahr"], index=0)
+use_demo = st.sidebar.toggle("Demo-Daten verwenden", value=(uploaded is None))
 
-if year_mode == "Ein Jahr":
-    year_selected = st.sidebar.slider("Jahr", year_min, year_max, year_max)
-    df = df_all[df_all["year"] == year_selected].copy()
+df_all = None
+
+if uploaded is not None and not use_demo:
+    try:
+        raw = read_csv_any(uploaded)
+        raw = normalize_column_names(raw)
+
+        # Auto-Mapping
+        mapping_guess = auto_map_columns(raw)
+
+        st.sidebar.subheader("Spalten-Mapping (optional anpassen)")
+        mapping = {}
+        for target in [
+            "date", "origin", "destination", "distance_km", "flight_time_min", "co2_kg",
+            "orig_lat", "orig_lon", "dest_lat", "dest_lon"
+        ]:
+            options = ["— nicht zugeordnet —"] + list(raw.columns)
+            default = mapping_guess.get(target, "— nicht zugeordnet —")
+            default_index = options.index(default) if default in options else 0
+            choice = st.sidebar.selectbox(f"{target}  →", options, index=default_index)
+            if choice != "— nicht zugeordnet —":
+                mapping[target] = choice
+
+        mapped = apply_mapping(raw, mapping)
+        ok, errors = validate_flights_df(mapped)
+
+        if not ok:
+            st.sidebar.error("CSV erkannt, aber noch nicht valide.")
+            for e in errors:
+                st.sidebar.write(f"• {e}")
+            st.warning("Bitte Mapping/CSV korrigieren – oder Demo-Daten aktivieren.")
+            df_all = load_flights_placeholder()
+        else:
+            df_all = finalize_df(mapped)
+            st.sidebar.success(f"CSV geladen: {len(df_all):,} Flüge".replace(",", "."))
+
+    except Exception as e:
+        st.sidebar.error(f"Fehler beim Laden: {e}")
+        df_all = load_flights_placeholder()
 else:
-    year_selected = None
-    df = df_all.copy()
-
-st.sidebar.caption("Aktuell Demo-Daten. Echte Daten kommen später.")
-
-# KPIs
-flights, avg_distance, total_co2_t, avg_duration = compute_kpis(df)
-k1, k2, k3, k4 = st.columns(4)
-k1.metric("Flüge", f"{flights:,}".replace(",", "."))
-k2.metric("Ø Distanz", f"{avg_distance:,.0f} km".replace(",", "."))
-k3.metric("Gesamt-CO₂", f"{total_co2_t:,.0f} t".replace(",", "."))
-k4.metric("Ø Flugdauer", f"{avg_duration:,.0f} min".replace(",", "."))
-
-st.divider()
-
-# Map
-st.markdown('<div class="section-title">Flugroutenkarte (interaktiv)</div>', unsafe_allow_html=True)
-deck = make_map(df)
-st.pydeck_chart(deck, use_container_width=True)
-
-st.divider()
-
-# Charts
-c1, c2 = st.columns(2)
-with c1:
-    st.markdown('<div class="section-title">Diagramm: Flüge pro Monat</div>', unsafe_allow_html=True)
-    st.altair_chart(chart_flights_per_month(df), use_container_width=True)
-
-with c2:
-    st.markdown('<div class="section-title">Diagramm: CO₂-Trend über Jahre</div>', unsafe_allow_html=True)
-    st.altair_chart(chart_co2_by_year(df), use_container_width=True)
-
-st.divider()
-
-# Comparison
-st.markdown('<div class="section-title">Vergleich: Emissionen vs. Kleinstadt</div>', unsafe_allow_html=True)
-small_city_t, share = compare_to_small_city(total_co2_t)
-
-colA, colB = st.columns([2, 1])
-with colA:
-    st.write("Platzhalter: später kommt hier ein sauber belegter Vergleich inkl. Quelle.")
-    st.info(
-        f"Demo: Kleinstadt = {small_city_t:,.0f} t CO₂/Jahr → Privatjet-Flüge ~{share:,.2f}% davon."
-        .replace(",", ".")
-    )
-with colB:
-    st.progress(min(max(share / 100, 0), 1), text=f"Anteil: {share:,.2f}%".replace(",", "."))
-
-with st.expander("🔎 Datenvorschau (Debug)"):
-    st.dataframe(df.head(30), use_container_width=True)
+    df_all = load_flights_placeholder()
+    st.sidebar.caption("Aktuell Demo-Daten aktiv.")
