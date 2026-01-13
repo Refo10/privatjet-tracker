@@ -24,6 +24,7 @@ left, right = st.columns([3, 1])
 with left:
     st.markdown('<div class="title-big">✈️ Privatjet-Tracker – Dashboard</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtle">Interaktive Visualisierung von Privatjetflügen & CO₂-Kennzahlen</div>', unsafe_allow_html=True)
+    st.caption("Datensatz: Privatjet-Flüge von Drake (N767CJ) – basierend auf öffentlich zugänglichen Informationen.")
 with right:
     st.markdown('<div class="pill">Python • Pandas • Streamlit</div>', unsafe_allow_html=True)
 
