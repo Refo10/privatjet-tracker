@@ -9,10 +9,8 @@ def compute_kpis(df: pd.DataFrame):
 
 def compare_to_small_city(total_co2_t: float, population: int = 15000, per_capita_t: float = 8.5):
     """
-    Vergleich: Privatjet-CO₂ (in Tonnen) vs. jährliche CO₂-Emissionen einer Kleinstadt.
-
-    population: Einwohnerzahl (Kleinstadt typischerweise 5.000–20.000)
-    per_capita_t: Pro-Kopf-Emissionen (t CO₂/Jahr), Default grob Deutschland-Niveau
+    Vergleich: Privatjet-CO₂ (in Tonnen) vs. jährliche CO₂-Emissionen einer deutschen Kleinstadt.
+    Kleinstadt: typischerweise 5.000–20.000 Einwohner.
     """
     small_city_total_t = population * per_capita_t
     share_percent = (total_co2_t / small_city_total_t * 100) if small_city_total_t > 0 else 0.0
