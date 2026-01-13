@@ -19,7 +19,7 @@ def make_map(df: pd.DataFrame):
         "html": "<b>{origin}</b> → <b>{destination}</b><br/>"
                 "Distanz: {distance_km} km<br/>"
                 "CO₂: {co2_kg} kg<br/>"
-                "Datum: {date}",
+                "Datum: {date_str}",
         "style": {"fontSize": "12px"},
     }
 
