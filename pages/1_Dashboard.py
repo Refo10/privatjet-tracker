@@ -156,18 +156,45 @@ st.divider()
 # =======================
 # Vergleich: Emissionen vs. Kleinstadt
 # =======================
-st.markdown("### Vergleich: Emissionen vs. Kleinstadt")
-small_city_t, share = compare_to_small_city(total_co2_t)
+st.markdown("### Vergleich: CO₂-Emissionen vs. deutsche Kleinstadt")
 
-colA, colB = st.columns([2, 1])
-with colA:
-    st.write("Platzhalter: später kommt hier ein sauber belegter Vergleich inkl. Quelle.")
-    st.info(
-        f"Demo: Kleinstadt = {small_city_t:,.0f} t CO₂/Jahr → Privatjet-Flüge ~{share:,.2f}% davon."
-        .replace(",", ".")
+st.caption("Kleinstadt in Deutschland: typischerweise **5.000–20.000 Einwohner**.")
+
+colL, colR = st.columns([1.2, 1])
+
+with colL:
+    population = st.slider(
+        "Einwohnerzahl der Kleinstadt (für den Vergleich)",
+        min_value=5000,
+        max_value=20000,
+        value=15000,
+        step=1000
     )
-with colB:
+    per_capita = st.number_input(
+        "Pro-Kopf-Emissionen (t CO₂/Jahr)",
+        min_value=1.0,
+        max_value=20.0,
+        value=8.5,
+        step=0.5
+    )
+
+small_city_t, share = compare_to_small_city(total_co2_t, population=population, per_capita_t=per_capita)
+
+with colR:
+    st.markdown("#### Ergebnis (aktueller Zeitraum)")
+    m1, m2 = st.columns(2)
+    m1.metric("Kleinstadt gesamt", f"{small_city_t:,.0f} t CO₂/Jahr".replace(",", "."))
+    m2.metric("Privatjet-Anteil", f"{share:,.2f} %".replace(",", "."))
+
+    # Progress-Bar (auf 0–100% begrenzt für Darstellung)
     st.progress(min(max(share / 100, 0), 1), text=f"Anteil: {share:,.2f}%".replace(",", "."))
+
+st.info(
+    f"Interpretation: Die im Dashboard ausgewählten Flüge verursachen **{total_co2_t:,.0f} t CO₂**. "
+    f"Verglichen mit einer Kleinstadt mit **{population:,} Einwohnern** (≈ {small_city_t:,.0f} t CO₂/Jahr) "
+    f"entspricht das **{share:,.2f}%** der jährlichen Stadtemissionen."
+    .replace(",", ".")
+)
 
 # =======================
 # Datenvorschau
