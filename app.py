@@ -9,14 +9,43 @@ st.set_page_config(
 
 apply_global_style()
 
-st.title("✈️ Privatjet-Tracker")
-st.caption("Data Science Bonusprojekt – interaktive Web-App für Privatjetflüge und CO₂-Kennzahlen")
+# =======================
+# Titel
+# =======================
+st.markdown('<div class="title-big">✈️ Privatjet-Tracker</div>', unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="subtle">'
+    'Data-Science-Bonusprojekt – interaktive Web-App zur Analyse von Privatjetflügen '
+    'und deren CO₂-Emissionen'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+st.divider()
+
+# =======================
+# Einleitung
+# =======================
+st.markdown(
+    """
+    **Willkommen im Privatjet-Tracker.**
+
+    Diese Anwendung visualisiert Privatjet-Flüge anhand eines strukturierten Datensatzes
+    und stellt deren ökologische Auswirkungen über Karten, Kennzahlen und Diagramme dar.
+    """
+)
 
 st.info(
-    "Nutze links die Navigation (Streamlit Pages):\n"
-    "- 📊 Dashboard\n"
-    "- 🧪 Methodik\n"
-    "- 🗂️ Datenquellen\n"
-    "- ℹ️ About\n\n"
-    "Inhalt und echte Daten fügen wir später ein – aktuell sind Platzhalter aktiv."
+    "👉 **Nutze die Navigation links**, um zum **Dashboard** oder zu den **Datenquellen** zu gelangen."
+)
+
+st.markdown(
+    """
+    **Funktionen im Überblick:**
+    - 📊 Interaktive Kennzahlen zu Flügen und CO₂-Emissionen  
+    - 🗺️ Weltweite Flugrouten auf einer interaktiven Karte  
+    - 🔄 Umschaltung zwischen Standard-Datensatz und hochgeladenen CSV-Dateien  
+    - 🗂️ Transparente Darstellung der verwendeten Daten  
+    """
 )
